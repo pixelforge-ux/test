@@ -78,6 +78,131 @@
         /* Ads Footer & Webview */
         
     </style>
+    <!-- ===== Footer Ads + WebView with Loading ===== -->
+
+<style>
+/* Footer */
+.footer-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+.ads-button {
+    pointer-events: auto;
+    background: linear-gradient(135deg,#f97316,#c2410c);
+    color:#fff;
+    padding:12px 36px;
+    border-radius:999px;
+    font-weight:700;
+    border:none;
+}
+
+/* WebView */
+#ads-webview-container {
+    position: fixed;
+    inset: 0;
+    background:#0f172a;
+    z-index:100;
+    display:flex;
+    flex-direction:column;
+    transform:translateY(100%);
+    transition:0.4s ease;
+}
+#ads-webview-container.active {
+    transform:translateY(0);
+}
+
+/* ===== Loading Overlay ===== */
+#ads-loading {
+    position:absolute;
+    inset:0;
+    background:#0f172a;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+
+/* Spinner */
+.loader {
+    width:48px;
+    height:48px;
+    border:4px solid rgba(255,255,255,.2);
+    border-top:4px solid #f97316;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<footer class="footer-nav">
+    <button id="btn-ads-open" class="ads-button">📢 ثبت تبلیغات</button>
+</footer>
+
+<div id="ads-webview-container">
+    <div style="padding:12px;background:#020617;color:white;display:flex;justify-content:space-between">
+        <button id="btn-ads-close" style="background:none;border:none;color:white;font-weight:bold">
+            ← بازگشت
+        </button>
+        <span>فرم ثبت تبلیغ</span>
+        <span style="width:40px"></span>
+    </div>
+
+    <div style="position:relative;flex:1">
+        <!-- Loading -->
+        <div id="ads-loading">
+            <div class="loader"></div>
+            <div style="margin-top:12px;color:#94a3b8;font-size:14px">
+                در حال بارگذاری...
+            </div>
+        </div>
+
+        <!-- Iframe -->
+        <iframe
+            id="ads-iframe"
+            style="width:100%;height:100%;border:none;background:white"
+            src="">
+        </iframe>
+    </div>
+</div>
+
+<script>
+const btnOpen = document.getElementById('btn-ads-open');
+const btnClose = document.getElementById('btn-ads-close');
+const container = document.getElementById('ads-webview-container');
+const iframe = document.getElementById('ads-iframe');
+const loading = document.getElementById('ads-loading');
+
+function openAdsView() {
+    const url = 'https://forms.gle/UHJ8mChHrEN4WFBa9';
+    loading.style.display = 'flex';
+    iframe.src = url;
+    container.classList.add('active');
+}
+
+iframe.onload = () => {
+    loading.style.display = 'none';
+};
+
+btnOpen.onclick = () => {
+    history.pushState({view:'ads'}, '');
+    openAdsView();
+};
+
+btnClose.onclick = () => history.back();
+
+window.onpopstate = () => {
+    container.classList.remove('active');
+};
+</script>
+
+<!-- ===== END ===== -->
 </head>
 <body class="bg-slate-950 text-white overflow-hidden h-screen flex flex-col">
     <div id="bg-mesh"></div>
