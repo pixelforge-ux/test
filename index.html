@@ -76,56 +76,7 @@
         }
 
         /* Ads Footer & Webview */
-        .footer-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.5rem 1rem;
-            z-index: 40;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(transparent, rgba(2, 6, 23, 0.9) 60%);
-            pointer-events: none;
-        }
-
-        .ads-button {
-            pointer-events: auto;
-            background: linear-gradient(135deg, #f97316, #c2410c);
-            color: white !important;
-            text-decoration: none !important;
-            padding: 0.75rem 2.5rem;
-            border-radius: 999px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .ads-button:active {
-            transform: scale(0.94) translateY(2px);
-            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
-        }
-
-        #ads-webview-container {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: #0f172a;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #ads-webview-container.active {
-            transform: translateY(0);
-        }
+        
     </style>
 </head>
 <body class="bg-slate-950 text-white overflow-hidden h-screen flex flex-col">
@@ -150,13 +101,6 @@
         </div>
         
         <p class="mt-16 text-slate-400 text-sm font-medium opacity-80">کاری از سید آروین موسوی</p>
-
-        <footer class="footer-nav">
-            <button id="btn-ads-open" class="ads-button">
-                <span class="icon">📢</span>
-                <span>ثبت تبلیغات</span>
-            </button>
-        </footer>
     </div>
 
     <!-- Settings Menu -->
