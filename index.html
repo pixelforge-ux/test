@@ -1,121 +1,103 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دوز پیشرفته | سید آروین موسوی</title>
+    <title>نقطه و خط حرفه‌ای</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://esm.sh/three",
+        "nipplejs": "https://esm.sh/nipplejs"
+      }
+    }
+    </script>
     <style>
         body {
-            font-family: 'Vazirmatn', sans-serif;
-            overflow: hidden;
-            touch-action: manipulation;
             user-select: none;
-            background: var(--bg-color, #0f172a);
+            touch-action: none;
+            font-family: 'Vazirmatn', sans-serif;
+            direction: rtl;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%);
         }
-        canvas#bg-canvas {
+
+        #bg-mesh {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1;
             width: 100%;
             height: 100%;
-        }
-        .glass {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-        .theme-classic .glass { 
-            background: rgba(255, 255, 255, 0.92); 
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            text-shadow: none;
-        }
-        
-        .cell {
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .theme-classic .cell { background: rgba(0, 0, 0, 0.05); }
-
-        .active-choice {
-            background: rgba(59, 130, 246, 0.2) !important;
-            border-color: rgba(59, 130, 246, 0.8) !important;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            z-index: -1;
+            opacity: 0.6;
+            background: 
+                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%), 
+                radial-gradient(at 50% 50%, #0f172a 0, transparent 80%), 
+                radial-gradient(at 100% 0%, #312e81 0, transparent 50%),
+                radial-gradient(at 50% 100%, #1e1b4b 0, transparent 50%);
+            filter: blur(60px);
+            animation: mesh-flow 15s infinite alternate ease-in-out;
         }
 
-        @keyframes footerColor {
-            0% { color: #3b82f6; }
-            25% { color: #8b5cf6; }
-            50% { color: #ef4444; }
-            75% { color: #10b981; }
-            100% { color: #3b82f6; }
-        }
-        .footer-animated {
-            animation: footerColor 8s infinite linear;
-            text-shadow: 0 0 10px rgba(0,0,0,0.3);
+        @keyframes mesh-flow {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
         }
 
-        .cell:active { transform: scale(0.9); }
-        .hidden { display: none !important; }
-        
-        /* Themes */
-        .theme-classic { --bg-color: #f3f4f6; --text: #1f2937; }
-        .theme-classic h1 { color: #ffffff !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        
-        .theme-dark { --bg-color: #020617; --text: #f9fafb; }
-        
-        .theme-neon { --bg-color: #000000; --text: #00ffff; --neon-color: #00ffff; }
-        .theme-neon .glass { 
-            background: rgba(0, 0, 0, 0.8); 
-            border: 2px solid var(--neon-color); 
-            box-shadow: 0 0 15px var(--neon-color), inset 0 0 5px var(--neon-color);
-            color: var(--neon-color);
-        }
-        .theme-neon h1 { color: #fff; text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
-        .theme-neon .cell { border: 1px solid rgba(0, 255, 255, 0.2); }
-        .theme-neon .btn-menu { border: 1px solid var(--neon-color); }
-        
-        .theme-cyberglass { --bg-color: #020617; --text: #ffffff; --neon-color: #38bdf8; }
-        .theme-cyberglass .glass { 
-            background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(20px) saturate(180%); 
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.3); 
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        #game-canvas {
+            max-width: 95vw;
+            max-height: 70vh;
+            cursor: crosshair;
+            filter: drop-shadow(0 0 30px rgba(0,0,0,0.8));
+            border-radius: 2rem;
         }
 
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 1rem center;
+            background-size: 1.5em;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.75rem; }
+        
+        .menu-btn {
+            @apply transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:shadow-blue-500/20;
+        }
+
+        /* Ads Footer & Webview */
         .footer-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1rem;
-            z-index: 1000;
+            padding: 1.5rem 1rem;
+            z-index: 40;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             background: linear-gradient(transparent, rgba(2, 6, 23, 0.9) 60%);
             pointer-events: none;
         }
 
-        .footer-nav * { pointer-events: auto; }
-
         .ads-button {
+            pointer-events: auto;
             background: linear-gradient(135deg, #f97316, #c2410c);
             color: white !important;
             text-decoration: none !important;
-            padding: 0.6rem 2rem;
+            padding: 0.75rem 2.5rem;
             border-radius: 999px;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             font-weight: 700;
             box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -123,813 +105,745 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-top: 0.5rem;
         }
 
         .ads-button:active {
             transform: scale(0.94) translateY(2px);
             box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
-            background: linear-gradient(135deg, #ea580c, #9a3412);
         }
 
-        .btn-menu {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        #ads-webview-container {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-menu:active { transform: scale(0.95); }
-        
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .grid-4 { grid-template-columns: repeat(4, 1fr); }
-        .grid-5 { grid-template-columns: repeat(5, 1fr); }
 
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            overflow: hidden;
-            cursor: pointer;
+        #ads-webview-container.active {
+            transform: translateY(0);
         }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
     </style>
 </head>
-<body class="theme-classic text-[var(--text)] transition-colors duration-500">
-    <canvas id="bg-canvas"></canvas>
+<body class="bg-slate-950 text-white overflow-hidden h-screen flex flex-col">
+    <div id="bg-mesh"></div>
 
     <!-- Main Menu -->
-    <div id="menu-screen" class="flex flex-col items-center justify-center min-h-screen p-6 space-y-8 pb-32">
-        <div class="text-center">
-            <h1 class="text-5xl font-bold mb-2 drop-shadow-2xl">دوز پیشرفته</h1>
-            <p class="opacity-60 text-sm">تجربه‌ای نوین از بازی دوز</p>
+    <div id="main-menu" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/40 backdrop-blur-sm p-6">
+        <h1 class="text-6xl font-black mb-12 tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-blue-300 via-blue-500 to-purple-600 drop-shadow-2xl text-center">
+            نقطه و خط
+        </h1>
+        
+        <div class="flex flex-col gap-5 w-full max-w-xs">
+            <button id="btn-pvp" class="menu-btn bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-5 px-8 rounded-3xl shadow-xl">
+                بازی دو نفره
+            </button>
+            <button id="btn-pve" class="menu-btn bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold py-5 px-8 rounded-3xl shadow-xl">
+                بازی با ربات
+            </button>
+            <button id="btn-settings" class="menu-btn bg-slate-800/80 hover:bg-slate-700 text-white font-bold py-5 px-8 rounded-3xl shadow-xl">
+                تنظیمات
+            </button>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-            <!-- Two Player Button -->
-            <button id="start-pvp-btn" class="btn-menu glass aspect-square flex flex-col items-center justify-center gap-3 rounded-3xl p-4 shadow-xl hover:bg-blue-500/10">
-                <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <span class="font-bold">دو نفره</span>
-            </button>
+        <p class="mt-16 text-slate-400 text-sm font-medium opacity-80">کاری از سید آروین موسوی</p>
 
-            <!-- Bot Player Button -->
-            <button id="start-pve-btn" class="btn-menu glass aspect-square flex flex-col items-center justify-center gap-3 rounded-3xl p-4 shadow-xl hover:bg-purple-500/10">
-                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-400">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 11v-1a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1"/></svg>
-                </div>
-                <span class="font-bold">با ربات</span>
+        <footer class="footer-nav">
+            <button id="btn-ads-open" class="ads-button">
+                <span class="icon">📢</span>
+                <span>ثبت تبلیغات</span>
             </button>
-
-            <!-- History Button -->
-            <button id="open-history-btn" class="btn-menu glass aspect-square flex flex-col items-center justify-center gap-3 rounded-3xl p-4 shadow-xl hover:bg-orange-500/10">
-                <div class="w-16 h-16 bg-orange-500/20 rounded-2xl flex items-center justify-center text-orange-400">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <span class="font-bold">تاریخچه</span>
-            </button>
-
-            <!-- Settings Button -->
-            <button id="open-settings-btn" class="btn-menu glass aspect-square flex flex-col items-center justify-center gap-3 rounded-3xl p-4 shadow-xl hover:bg-gray-500/10">
-                <div class="w-16 h-16 bg-gray-500/20 rounded-2xl flex items-center justify-center text-gray-400">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                </div>
-                <span class="font-bold">تنظیمات</span>
-            </button>
-        </div>
-
+        </footer>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-start justify-center p-6 bg-black/60 backdrop-blur-md pt-10 sm:pt-20">
-        <div class="glass w-full max-w-sm rounded-3xl p-6 flex flex-col space-y-4">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-xl font-bold">تنظیمات بازی</h3>
-                <button id="close-settings" class="p-1 hover:bg-white/10 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
+    <!-- Settings Menu -->
+    <div id="settings-menu" class="hidden absolute inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-xl p-6">
+        <h2 class="text-3xl font-bold mb-10 text-blue-400">تنظیمات بازی</h2>
+        
+        <div class="w-full max-w-sm space-y-8">
+            <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-400 block pr-1">اندازه صفحه</label>
+                <select id="setting-grid" class="w-full bg-slate-800/50 p-4 rounded-2xl outline-none border border-slate-700 focus:border-blue-500 transition-colors">
+                    <option value="3">کوچک (۳×۳)</option>
+                    <option value="5" selected>متوسط (۵×۵)</option>
+                    <option value="8">بزرگ (۸×۸)</option>
+                    <option value="12">خیلی بزرگ (۱۲×۱۲)</option>
+                </select>
             </div>
 
-            <!-- Board Size -->
-            <div class="space-y-2">
-                <label class="text-sm opacity-60">اندازه جدول</label>
-                <div class="flex gap-2">
-                    <button data-size="3" class="size-btn flex-1 py-2 glass rounded-xl text-sm border-2 border-transparent">۳×۳</button>
-                    <button data-size="4" class="size-btn flex-1 py-2 glass rounded-xl text-sm border-2 border-transparent">۴×۴</button>
-                    <button data-size="5" class="size-btn flex-1 py-2 glass rounded-xl text-sm border-2 border-transparent">۵×۵</button>
-                </div>
+            <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-400 block pr-1">سختی ربات</label>
+                <select id="setting-difficulty" class="w-full bg-slate-800/50 p-4 rounded-2xl outline-none border border-slate-700 focus:border-blue-500 transition-colors">
+                    <option value="easy">آسان (تصادفی)</option>
+                    <option value="medium" selected>متوسط (هوشمند)</option>
+                    <option value="hard">سخت (حرفه‌ای)</option>
+                </select>
             </div>
 
-            <!-- Difficulty (Visible always but applied for PVE) -->
-            <div class="space-y-2">
-                <label class="text-sm opacity-60">سختی ربات</label>
-                <div class="flex gap-2">
-                    <button data-diff="0" class="diff-btn flex-1 py-2 glass rounded-xl text-xs border-2 border-transparent">آسان</button>
-                    <button data-diff="1" class="diff-btn flex-1 py-2 glass rounded-xl text-xs border-2 border-transparent">متوسط</button>
-                    <button data-diff="2" class="diff-btn flex-1 py-2 glass rounded-xl text-xs border-2 border-transparent">سخت</button>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 block pr-1 text-center">رنگ بازیکن ۱</label>
+                    <input type="color" id="setting-p1-color" value="#3b82f6" class="w-full h-14 bg-transparent cursor-pointer rounded-2xl">
                 </div>
-            </div>
-
-            <!-- Theme & Symbols Row -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="space-y-2">
-                    <label class="text-sm opacity-60">پوسته</label>
-                    <select id="theme-select" class="w-full p-2 glass rounded-xl text-sm outline-none bg-transparent">
-                        <option value="classic">کلاسیک</option>
-                        <option value="dark">تاریک</option>
-                        <option value="neon">نئون</option>
-                        <option value="cyberglass">شیشه‌ای</option>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-sm opacity-60">طرح نمادها</label>
-                    <select id="symbol-select" class="w-full p-2 glass rounded-xl text-sm outline-none bg-transparent">
-                        <option value="standard">کلاسیک (X / O)</option>
-                        <option value="geometric">اشکال هندسی</option>
-                        <option value="tech">تکنولوژی</option>
-                        <option value="nature">طبیعت</option>
-                    </select>
+                <div class="space-y-3">
+                    <label class="text-sm font-bold text-slate-400 block pr-1 text-center">رنگ بازیکن ۲</label>
+                    <input type="color" id="setting-p2-color" value="#ef4444" class="w-full h-14 bg-transparent cursor-pointer rounded-2xl">
                 </div>
             </div>
 
-            <!-- Color Picker -->
-            <div class="space-y-2">
-                <label class="text-sm opacity-60">رنگ نمادها</label>
-                <div class="flex items-center gap-6 glass p-3 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <input type="color" id="color-x" value="#3b82f6">
-                        <span class="text-sm font-bold">نماد اول</span>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <input type="color" id="color-o" value="#ef4444">
-                        <span class="text-sm font-bold">نماد دوم</span>
-                    </div>
-                </div>
+            <div class="pt-2">
+                <label class="flex items-center space-x-4 space-x-reverse cursor-pointer group">
+                    <input type="checkbox" id="setting-bloom" checked class="w-6 h-6 rounded-lg border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500">
+                    <span class="text-base font-bold text-slate-300 group-hover:text-white transition-colors">جلوه‌های گرافیکی ویژه (Bloom)</span>
+                </label>
+            </div>
+        </div>
+        
+        <button id="btn-settings-back" class="mt-12 bg-blue-500 hover:bg-blue-400 text-white font-bold py-4 px-16 rounded-full shadow-[0_10px_30px_rgba(59,130,246,0.4)] transition-all active:scale-95">
+            تایید و بازگشت
+        </button>
+    </div>
+
+    <!-- Game UI Overlay -->
+    <div id="game-ui" class="flex flex-col h-full pointer-events-none p-4 max-w-2xl mx-auto w-full">
+        <!-- Stats -->
+        <div class="flex justify-between items-stretch mb-4 gap-2">
+            <div id="p1-score-card" class="flex-1 glass-panel border-r-4 border-blue-500 p-4 rounded-2xl transition-all flex flex-col items-center">
+                <div class="text-[10px] uppercase tracking-widest font-black opacity-50 mb-1">بازیکن ۱</div>
+                <div id="p1-score" class="text-4xl font-black text-blue-400">۰</div>
             </div>
             
-            <button id="save-settings" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold shadow-lg mt-2">ذخیره تنظیمات</button>
+            <div class="flex flex-col items-center justify-center gap-2 px-2">
+                <div id="turn-indicator" class="text-xs font-black bg-white/5 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10 shadow-2xl text-white whitespace-nowrap">نوبت بازیکن ۱</div>
+                <div class="w-1 h-12 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+            </div>
+
+            <div id="p2-score-card" class="flex-1 glass-panel border-l-4 border-red-500 p-4 rounded-2xl transition-all flex flex-col items-center">
+                <div class="text-[10px] uppercase tracking-widest font-black opacity-50 mb-1" id="p2-label">بازیکن ۲</div>
+                <div id="p2-score" class="text-4xl font-black text-red-400">۰</div>
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="flex-grow flex items-center justify-center pointer-events-auto overflow-hidden relative" id="canvas-wrapper">
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-6 flex flex-col items-center gap-4 pointer-events-auto">
+            <div class="flex justify-between w-full px-4">
+                <button id="btn-game-exit" class="text-slate-400 hover:text-red-400 transition-colors text-sm font-bold py-2 px-4 rounded-xl hover:bg-white/5">
+                    خروج از بازی
+                </button>
+                <button id="btn-game-reset" class="text-slate-400 hover:text-blue-400 transition-colors text-sm font-bold py-2 px-4 rounded-xl hover:bg-white/5">
+                    شروع مجدد
+                </button>
+            </div>
+            <p class="text-[10px] text-slate-500 opacity-60 font-medium">کاری از سید آروین موسوی</p>
         </div>
     </div>
 
-    <!-- Game Screen -->
-    <div id="game-screen" class="hidden flex flex-col items-center justify-between min-h-screen p-4 pb-8">
-        <div class="w-full max-w-sm flex justify-between items-center glass p-3 rounded-xl">
-            <button id="back-btn" class="p-2 hover:bg-white/10 rounded-lg">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <!-- Ads Webview Overlay -->
+    <div id="ads-webview-container">
+        <div class="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800">
+            <button id="btn-ads-close" class="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
+                <svg class="w-6 h-6 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                <span class="font-bold">بازگشت</span>
             </button>
-            <div class="flex gap-4 font-bold text-lg">
-                <div id="score-x" class="text-blue-500">X: 0</div>
-                <div class="opacity-30">|</div>
-                <div id="score-o" class="text-red-500">O: 0</div>
-            </div>
-            <button id="toggle-audio" class="p-2 hover:bg-white/10 rounded-lg">
-                <svg id="audio-icon-on" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                <svg id="audio-icon-off" class="hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
-            </button>
+            <h3 class="text-lg font-black text-white">فرم ثبت تبلیغ</h3>
+            <div class="w-10"></div> <!-- Spacer -->
         </div>
-
-        <div id="board-container" class="w-full aspect-square max-w-[min(90vw,400px)] glass rounded-2xl p-4 grid gap-2 shadow-2xl relative">
-            <!-- Grid cells injected here -->
-        </div>
-
-        <div class="flex flex-col gap-3 w-full max-w-sm">
-            <div id="turn-indicator" class="text-center font-bold text-xl py-2 glass rounded-xl">نوبت: <span id="current-player-symbol">X</span></div>
-            <div class="flex gap-2">
-                <button id="reset-btn" class="flex-1 py-3 glass rounded-xl font-bold flex items-center justify-center gap-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                    بازنشانی
-                </button>
-                <button id="history-btn" class="flex-1 py-3 glass rounded-xl font-bold flex items-center justify-center gap-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    تاریخچه
-                </button>
-            </div>
+        <div class="flex-grow relative bg-white">
+            <iframe id="ads-iframe" class="absolute inset-0 w-full h-full border-none" src=""></iframe>
         </div>
     </div>
 
-    <!-- History Modal -->
-    <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-        <div class="glass w-full max-w-xs rounded-3xl p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">آخرین بازی‌ها</h3>
-                <button id="close-history" class="p-1 hover:bg-white/10 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <div id="history-list" class="space-y-2 max-h-60 overflow-y-auto pr-2 text-sm">
-                <!-- History items injected here -->
-            </div>
-            <button id="clear-history" class="mt-4 text-xs opacity-50 hover:opacity-100 transition-opacity">پاک کردن تاریخچه</button>
+    <!-- Game Over Screen -->
+    <div id="game-over" class="hidden absolute inset-0 z-[70] flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-2xl p-10 text-center">
+        <div class="w-28 h-28 mb-8 rounded-full bg-slate-800/50 flex items-center justify-center border border-slate-700 shadow-2xl">
+            <svg class="w-14 h-14 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
         </div>
+        <h2 id="winner-text" class="text-5xl font-black mb-4 tracking-tight drop-shadow-lg">بازیکن ۱ برنده شد!</h2>
+        <p id="final-score" class="text-slate-400 text-lg mb-14">نتیجه نهایی: ۱۲ - ۸</p>
+        
+        <button id="btn-play-again" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black py-5 px-16 rounded-3xl shadow-2xl transition-all active:scale-95 text-xl">
+            بازی دوباره
+        </button>
+        <p class="mt-12 text-slate-500 text-xs">کاری از سید آروین موسوی</p>
     </div>
 
-    <!-- Win Modal -->
-    <div id="win-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80">
-        <div class="glass p-8 rounded-3xl text-center scale-up shadow-2xl">
-            <div id="win-message" class="text-4xl font-bold mb-6">X برنده شد!</div>
-            <button id="play-again-btn" class="btn-primary w-full">بازی دوباره</button>
-        </div>
-    </div>
-
-    <!-- Persistent Footer -->
-    <div id="persistent-footer" class="footer-nav">
-        <div class="footer-animated font-bold text-sm tracking-wide">طراحی شده توسط سید آروین موسوی</div>
-        <a href="https://eitaa.com/Arvinweb" class="ads-button" onclick="app.openArvin(event)">
-            <span class="icon">📢</span>
-            <span>ثبت تبلیغات</span>
-        </a>
-    </div>
-
-    <script type="importmap">
-    {
-        "imports": {
-            "three": "https://esm.sh/three@0.160.0",
-            "three/addons/": "https://esm.sh/three@0.160.0/examples/jsm/"
-        }
-    }
-    </script>
     <script type="module">
-        import * as THREE from 'three';
+        /**
+         * Pro Dots & Boxes - Main Game Logic
+         */
 
-        // --- State & Config ---
+        class SoundManager {
+            constructor() {
+                this.context = new (window.AudioContext || window.webkitAudioContext)();
+                this.buffers = {};
+            }
+
+            async load(name, url) {
+                try {
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    this.buffers[name] = await this.context.decodeAudioData(arrayBuffer);
+                } catch (e) {
+                    console.warn(`Failed to load sound: ${name}`);
+                }
+            }
+
+            play(name) {
+                if (!this.buffers[name]) return;
+                if (this.context.state === 'suspended') {
+                    this.context.resume();
+                }
+                const source = this.context.createBufferSource();
+                source.buffer = this.buffers[name];
+                source.connect(this.context.destination);
+                source.start(0);
+            }
+        }
+
+        const sounds = new SoundManager();
+        sounds.load('line', 'line_draw.mp3');
+        sounds.load('box', 'box_complete.mp3');
+        sounds.load('win', 'victory.mp3');
+
+        // --- Game State ---
         const state = {
-            mode: 'pvp', // pvp, pve
-            size: 3,
-            difficulty: 1, // 0: easy, 1: medium, 2: hard
-            theme: 'classic',
-            symbols: ['X', 'O'],
-            colors: { X: '#3b82f6', O: '#ef4444' },
-            scores: { X: 0, O: 0 },
-            history: [],
-            board: [],
-            currentPlayer: 'X',
+            gridSize: 5,
+            difficulty: 'medium',
+            p1Color: '#3b82f6',
+            p2Color: '#ef4444',
+            isPvE: true,
+            currentPlayer: 1, // 1 or 2
+            dots: [],
+            lines: [], // {p1, p2, owner, lastMoved: timestamp}
+            boxes: [], // {indices: [4 dots], owner}
+            scores: { 1: 0, 2: 0 },
             isGameOver: false,
-            audioEnabled: true,
-            symbolsMap: {
-                standard: [
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>'
-                ],
-                geometric: [
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>',
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2z"></path></svg>'
-                ],
-                tech: [
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>'
-                ],
-                nature: [
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8a8 8 0 0 1-8 8c-1 0-1 0-2-.09V20z"></path><path d="M11 20c0-1.5-.7-3-2-3"></path><path d="M11 20c2 0 3.5-.7 3.5-2"></path></svg>',
-                    '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
-                ]
-            }
+            bloom: true,
+            canvas: null,
+            ctx: null,
+            hoveredLine: null,
+            lastMoveTime: 0,
+            lastLine: null
         };
 
-        // Default symbols
-        state.symbols = state.symbolsMap.standard;
+        // --- Initialization ---
+        function init() {
+            state.canvas = document.getElementById('game-canvas');
+            state.ctx = state.canvas.getContext('2d');
+            
+            setupEventListeners();
+            resetGame();
+            animate();
+        }
 
-        // --- Persistence ---
-        function saveState() {
-            const data = {
-                size: state.size,
-                difficulty: state.difficulty,
-                theme: state.theme,
-                symbolType: document.getElementById('symbol-select').value,
-                colors: state.colors,
-                history: state.history,
-                audioEnabled: state.audioEnabled
+        function setupEventListeners() {
+            window.addEventListener('resize', resizeCanvas);
+            
+            // History API for Mobile Back Button
+            window.onpopstate = (e) => {
+                const view = e.state?.view || 'menu';
+                closeAllScreens();
+                if (view === 'settings') {
+                    document.getElementById('settings-menu').classList.remove('hidden');
+                } else if (view === 'ads') {
+                    openAdsView();
+                } else if (view === 'game') {
+                    // Stay in game
+                } else {
+                    document.getElementById('main-menu').classList.remove('hidden');
+                }
             };
-            localStorage.setItem('tictactoe_state', JSON.stringify(data));
-        }
 
-        function loadState() {
-            const saved = localStorage.getItem('tictactoe_state');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    state.size = data.size || 3;
-                    state.difficulty = data.difficulty || 1;
-                    state.theme = data.theme || 'classic';
-                    state.colors = data.colors || { X: '#3b82f6', O: '#ef4444' };
-                    state.history = data.history || [];
-                    if (data.audioEnabled !== undefined) state.audioEnabled = data.audioEnabled;
-                    
-                    // Apply loaded values to UI
-                    document.getElementById('theme-select').value = state.theme;
-                    document.getElementById('symbol-select').value = data.symbolType || 'standard';
-                    state.symbols = state.symbolsMap[data.symbolType || 'standard'];
-                    document.getElementById('color-x').value = state.colors.X;
-                    document.getElementById('color-o').value = state.colors.O;
-                    
-                    document.body.className = `theme-${state.theme} text-[var(--text)] transition-colors duration-500`;
-                } catch (e) {
-                    console.error("Failed to load state", e);
-                }
+            function closeAllScreens() {
+                document.getElementById('main-menu').classList.add('hidden');
+                document.getElementById('settings-menu').classList.add('hidden');
+                document.getElementById('game-over').classList.add('hidden');
+                document.getElementById('ads-webview-container').classList.remove('active');
             }
+
+            const canvas = state.canvas;
             
-            // Sync Audio UI regardless of whether state was loaded or just defaulted
-            const onIcon = document.getElementById('audio-icon-on');
-            const offIcon = document.getElementById('audio-icon-off');
-            if (state.audioEnabled) {
-                onIcon.classList.remove('hidden');
-                offIcon.classList.add('hidden');
-            } else {
-                onIcon.classList.add('hidden');
-                offIcon.classList.remove('hidden');
-            }
-        }
-
-        // --- Audio ---
-        const audio = {
-            bg: new Audio('music.mp3'),
-            click: new Audio('click.mp3'),
-            win: new Audio('win.mp3'),
-            draw: new Audio('draw.mp3'),
-            ctx: null
-        };
-        audio.bg.loop = true;
-
-        function playSound(name) {
-            if (!state.audioEnabled) return;
-            const sound = audio[name];
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(() => {});
-            }
-        }
-
-        // --- Three.js Background ---
-        let scene, camera, renderer, particles = [];
-        function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-            scene.add(ambientLight);
-
-            camera.position.z = 10;
-        }
-
-        function spawnParticle() {
-            const isX = Math.random() > 0.5;
-            let geometry;
-            if (isX) {
-                geometry = new THREE.BoxGeometry(0.1, 1, 0.1);
-            } else {
-                geometry = new THREE.TorusGeometry(0.4, 0.1, 8, 24);
-            }
-
-            const pColor = isX ? state.colors.X : state.colors.O;
-            const material = new THREE.MeshStandardMaterial({ 
-                color: new THREE.Color(pColor),
-                emissive: new THREE.Color(pColor),
-                emissiveIntensity: 0.5
-            });
-
-            const mesh = new THREE.Group();
-            if (isX) {
-                const bar1 = new THREE.Mesh(geometry, material);
-                const bar2 = new THREE.Mesh(geometry, material);
-                bar1.rotation.z = Math.PI / 4;
-                bar2.rotation.z = -Math.PI / 4;
-                mesh.add(bar1, bar2);
-            } else {
-                mesh.add(new THREE.Mesh(geometry, material));
-            }
-
-            mesh.position.set((Math.random() - 0.5) * 25, 12, (Math.random() - 0.5) * 10);
-            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-            
-            scene.add(mesh);
-            particles.push({ mesh, speed: 0.03 + Math.random() * 0.08, rotSpeed: (Math.random() - 0.5) * 0.03 });
-        }
-
-        function animateThree() {
-            requestAnimationFrame(animateThree);
-            
-            if (Math.random() < 0.15 && particles.length < 150) {
-                spawnParticle();
-            }
-
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.mesh.position.y -= p.speed;
-                p.mesh.rotation.x += p.rotSpeed;
-                p.mesh.rotation.y += p.rotSpeed;
+            const handleMove = (e) => {
+                if (state.isGameOver || (state.isPvE && state.currentPlayer === 2)) return;
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
                 
-                if (p.mesh.position.y < -12) {
-                    scene.remove(p.mesh);
-                    particles.splice(i, 1);
+                const x = clientX - rect.left;
+                const y = clientY - rect.top;
+                updateHoveredLine(x, y);
+            };
+
+            const handleClick = (e) => {
+                if (state.isGameOver || (state.isPvE && state.currentPlayer === 2)) return;
+                if (state.hoveredLine) {
+                    makeMove(state.hoveredLine);
                 }
-            }
+            };
+
+            canvas.addEventListener('mousemove', handleMove);
+            canvas.addEventListener('mousedown', handleClick);
+            canvas.addEventListener('touchstart', (e) => {
+                handleMove(e);
+                handleClick(e);
+            }, { passive: false });
+
+            // Menu Buttons
+            document.getElementById('btn-pvp').onclick = () => {
+                state.isPvE = false;
+                document.getElementById('p2-label').textContent = 'بازیکن ۲';
+                history.pushState({ view: 'game' }, '');
+                startGame();
+            };
             
-            renderer.render(scene, camera);
+            document.getElementById('btn-pve').onclick = () => {
+                state.isPvE = true;
+                document.getElementById('p2-label').textContent = 'ربات';
+                history.pushState({ view: 'game' }, '');
+                startGame();
+            };
+
+            document.getElementById('btn-settings').onclick = () => {
+                history.pushState({ view: 'settings' }, '');
+                document.getElementById('settings-menu').classList.remove('hidden');
+            };
+
+            document.getElementById('btn-settings-back').onclick = () => {
+                applySettings();
+                window.history.back();
+            };
+
+            document.getElementById('btn-game-exit').onclick = () => {
+                window.history.back();
+            };
+
+            document.getElementById('btn-game-reset').onclick = resetGame;
+            document.getElementById('btn-play-again').onclick = resetGame;
+
+            // Ads Logic
+            document.getElementById('btn-ads-open').onclick = (e) => {
+                e.preventDefault();
+                history.pushState({ view: 'ads' }, '');
+                openAdsView();
+            };
+
+            document.getElementById('btn-ads-close').onclick = () => {
+                window.history.back();
+            };
         }
 
-        window.playSound = playSound;
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- UI Elements ---
-        const menuScreen = document.getElementById('menu-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const boardContainer = document.getElementById('board-container');
-        const scoreX = document.getElementById('score-x');
-        const scoreO = document.getElementById('score-o');
-        const turnIndicator = document.getElementById('current-player-symbol');
-        const winModal = document.getElementById('win-modal');
-        const winMessage = document.getElementById('win-message');
-        const historyModal = document.getElementById('history-modal');
-        const historyList = document.getElementById('history-list');
-        const persistentFooter = document.getElementById('persistent-footer');
-
-        // --- Game Logic ---
-        function initBoard() {
-            state.board = Array(state.size * state.size).fill(null);
-            state.isGameOver = false;
-            state.currentPlayer = 'X';
-            updateTurnUI();
+        function openAdsView() {
+            const container = document.getElementById('ads-webview-container');
+            const iframe = document.getElementById('ads-iframe');
+            const url = 'https://forms.gle/UHJ8mChHrEN4WFBa9';
             
-            boardContainer.innerHTML = '';
-            boardContainer.className = `w-full aspect-square max-w-[min(90vw,400px)] glass rounded-2xl p-4 grid gap-2 shadow-2xl relative grid-${state.size}`;
-            
-            for (let i = 0; i < state.size * state.size; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell glass rounded-lg text-3xl font-bold transition-all duration-200';
-                cell.dataset.index = i;
-                cell.onclick = () => handleMove(i);
-                boardContainer.appendChild(cell);
+            if (iframe.src !== url) {
+                iframe.src = url;
             }
+            container.classList.add('active');
         }
 
-        function handleMove(index) {
-            if (state.board[index] || state.isGameOver) return;
-            
-            makeMove(index, state.currentPlayer);
-            
-            if (checkWinner(state.board, state.size)) {
-                endGame(state.currentPlayer);
-            } else if (state.board.every(cell => cell !== null)) {
-                endGame('draw');
-            } else {
-                state.currentPlayer = state.currentPlayer === 'X' ? 'O' : 'X';
-                updateTurnUI();
-                
-                if (state.mode === 'pve' && state.currentPlayer === 'O') {
-                    boardContainer.style.pointerEvents = 'none';
-                    setTimeout(() => {
-                        const aiIndex = getBestMove();
-                        handleMove(aiIndex);
-                        boardContainer.style.pointerEvents = 'auto';
-                    }, 600);
-                }
-            }
+        function applySettings() {
+            state.gridSize = parseInt(document.getElementById('setting-grid').value);
+            state.difficulty = document.getElementById('setting-difficulty').value;
+            state.p1Color = document.getElementById('setting-p1-color').value;
+            state.p2Color = document.getElementById('setting-p2-color').value;
+            state.bloom = document.getElementById('setting-bloom').checked;
+            resetGame();
         }
-
-        function makeMove(index, player) {
-            state.board[index] = player;
-            const cell = boardContainer.children[index];
-            cell.innerHTML = state.symbols[player === 'X' ? 0 : 1];
-            cell.style.color = state.colors[player];
-            playSound('click');
-        }
-
-        function checkWinner(board, size) {
-            const lines = [];
-            // Rows
-            for (let i = 0; i < size; i++) {
-                const row = [];
-                for (let j = 0; j < size; j++) row.push(i * size + j);
-                lines.push(row);
-            }
-            // Cols
-            for (let i = 0; i < size; i++) {
-                const col = [];
-                for (let j = 0; j < size; j++) col.push(j * size + i);
-                lines.push(col);
-            }
-            // Diagonals
-            const diag1 = [], diag2 = [];
-            for (let i = 0; i < size; i++) {
-                diag1.push(i * size + i);
-                diag2.push(i * size + (size - 1 - i));
-            }
-            lines.push(diag1, diag2);
-
-            for (const line of lines) {
-                if (line.every(idx => board[idx] && board[idx] === board[line[0]])) {
-                    return board[line[0]];
-                }
-            }
-            return null;
-        }
-
-        function endGame(winner) {
-            state.isGameOver = true;
-            let resultText = '';
-            
-            if (winner === 'draw') {
-                resultText = 'بازی مساوی شد!';
-            } else {
-                const symbolLabel = winner === 'X' ? 'نفر اول (X)' : 'نفر دوم (O)';
-                resultText = `${symbolLabel} برنده شد!`;
-            }
-            
-            winMessage.textContent = resultText;
-            
-            if (winner !== 'draw') {
-                state.scores[winner]++;
-                updateScoreUI();
-                playSound('win');
-            } else {
-                playSound('draw');
-            }
-
-            state.history.unshift({
-                winner,
-                size: state.size,
-                mode: state.mode,
-                time: new Date().toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' })
-            });
-            if (state.history.length > 20) state.history.pop();
-            saveState();
-            
-            setTimeout(() => {
-                winModal.classList.remove('hidden');
-                history.pushState({ modal: 'win' }, '', '');
-            }, 500);
-        }
-
-        function updateScoreUI() {
-            scoreX.textContent = `X: ${state.scores.X}`;
-            scoreO.textContent = `O: ${state.scores.O}`;
-            scoreX.style.color = state.colors.X;
-            scoreO.style.color = state.colors.O;
-            scoreX.style.textShadow = `0 0 10px ${state.colors.X}44`;
-            scoreO.style.textShadow = `0 0 10px ${state.colors.O}44`;
-        }
-
-        function updateTurnUI() {
-            turnIndicator.innerHTML = state.symbols[state.currentPlayer === 'X' ? 0 : 1];
-            turnIndicator.style.color = state.colors[state.currentPlayer];
-        }
-
-        // --- AI ---
-        function getBestMove() {
-            if (state.difficulty === 0) {
-                const empties = state.board.map((v, i) => v === null ? i : null).filter(v => v !== null);
-                return empties[Math.floor(Math.random() * empties.length)];
-            }
-            if (state.difficulty === 1 || state.size > 3) {
-                const winMove = findWinningMove('O');
-                if (winMove !== -1) return winMove;
-                const blockMove = findWinningMove('X');
-                if (blockMove !== -1) return blockMove;
-                const center = Math.floor((state.size * state.size) / 2);
-                if (state.board[center] === null) return center;
-                const empties = state.board.map((v, i) => v === null ? i : null).filter(v => v !== null);
-                return empties[Math.floor(Math.random() * empties.length)];
-            }
-            let bestScore = -Infinity;
-            let move;
-            for (let i = 0; i < 9; i++) {
-                if (state.board[i] === null) {
-                    state.board[i] = 'O';
-                    let score = minimax(state.board, 0, false);
-                    state.board[i] = null;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        move = i;
-                    }
-                }
-            }
-            return move;
-        }
-
-        function findWinningMove(player) {
-            for (let i = 0; i < state.board.length; i++) {
-                if (state.board[i] === null) {
-                    state.board[i] = player;
-                    if (checkWinner(state.board, state.size) === player) {
-                        state.board[i] = null;
-                        return i;
-                    }
-                    state.board[i] = null;
-                }
-            }
-            return -1;
-        }
-
-        function minimax(board, depth, isMaximizing) {
-            const result = checkWinner(board, 3);
-            if (result === 'O') return 10 - depth;
-            if (result === 'X') return depth - 10;
-            if (board.every(cell => cell !== null)) return 0;
-            if (isMaximizing) {
-                let bestScore = -Infinity;
-                for (let i = 0; i < 9; i++) {
-                    if (board[i] === null) {
-                        board[i] = 'O';
-                        let score = minimax(board, depth + 1, false);
-                        board[i] = null;
-                        bestScore = Math.max(score, bestScore);
-                    }
-                }
-                return bestScore;
-            } else {
-                let bestScore = Infinity;
-                for (let i = 0; i < 9; i++) {
-                    if (board[i] === null) {
-                        board[i] = 'X';
-                        let score = minimax(board, depth + 1, true);
-                        board[i] = null;
-                        bestScore = Math.min(score, bestScore);
-                    }
-                }
-                return bestScore;
-            }
-        }
-
-        // --- App Global Logic ---
-        window.app = {
-            openArvin: (event) => {
-                if (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                const url = 'https://eitaa.com/Arvinweb';
-                try { if(window.playSound) window.playSound('click'); } catch(e) {}
-                try {
-                    if (window.Eitaa && window.Eitaa.WebApp && typeof window.Eitaa.WebApp.openEitaaLink === 'function') {
-                        window.Eitaa.WebApp.openEitaaLink(url);
-                        return;
-                    }
-                } catch (e) {
-                    console.warn("Eitaa openEitaaLink failed, falling back", e);
-                }
-                window.open(url, '_blank');
-            }
-        };
-
-        // --- Event Listeners ---
-        const settingsModal = document.getElementById('settings-modal');
-        document.getElementById('start-pvp-btn').onclick = () => { state.mode = 'pvp'; startGame(); };
-        document.getElementById('start-pve-btn').onclick = () => { state.mode = 'pve'; startGame(); };
-        document.getElementById('open-history-btn').onclick = () => { renderHistory(); };
-        document.getElementById('open-settings-btn').onclick = () => {
-            settingsModal.classList.remove('hidden');
-            updateSettingsUI();
-            history.pushState({ modal: 'settings' }, '', '');
-        };
-        document.getElementById('close-settings').onclick = () => { history.back(); };
-
-        function updateSettingsUI() {
-            document.querySelectorAll('.size-btn').forEach(b => {
-                const isActive = parseInt(b.dataset.size) === state.size;
-                b.classList.toggle('active-choice', isActive);
-            });
-            document.querySelectorAll('.diff-btn').forEach(b => {
-                const isActive = parseInt(b.dataset.diff) === state.difficulty;
-                b.classList.toggle('active-choice', isActive);
-            });
-        }
-
-        document.querySelectorAll('.size-btn').forEach(btn => {
-            btn.onclick = () => { state.size = parseInt(btn.dataset.size); updateSettingsUI(); };
-        });
-
-        document.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.onclick = () => { state.difficulty = parseInt(btn.dataset.diff); updateSettingsUI(); };
-        });
-
-        document.getElementById('save-settings').onclick = () => {
-            state.theme = document.getElementById('theme-select').value;
-            state.symbols = state.symbolsMap[document.getElementById('symbol-select').value];
-            state.colors.X = document.getElementById('color-x').value;
-            state.colors.O = document.getElementById('color-o').value;
-            document.body.className = `theme-${state.theme} text-[var(--text)] transition-colors duration-500`;
-            history.back();
-            particles.forEach(p => scene.remove(p.mesh));
-            particles = [];
-            saveState();
-        };
 
         function startGame() {
-            menuScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-            persistentFooter.classList.add('hidden');
-            history.pushState({ view: 'game' }, '', '');
-            initBoard();
-            updateScoreUI();
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('game-over').classList.add('hidden');
+            resetGame();
         }
 
-        document.getElementById('back-btn').onclick = () => {
-            history.back();
-        };
-
-        document.getElementById('reset-btn').onclick = () => { initBoard(); };
-        document.getElementById('play-again-btn').onclick = () => { 
-            history.back();
-            initBoard(); 
-        };
-        document.getElementById('history-btn').onclick = () => renderHistory();
-
-        function renderHistory() {
-            historyList.innerHTML = state.history.length ? '' : '<div class="opacity-50 text-center">هنوز بازی ثبت نشده است</div>';
-            state.history.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'glass p-2 rounded-lg flex justify-between text-xs items-center';
-                const result = item.winner === 'draw' ? 'تساوی' : `برنده: ${item.winner}`;
-                div.innerHTML = `<span>${result} (${item.size}×${item.size})</span> <span class="opacity-50">${item.time}</span>`;
-                historyList.appendChild(div);
-            });
-            if (historyModal.classList.contains('hidden')) {
-                history.pushState({ modal: 'history' }, '', '');
-            }
-            historyModal.classList.remove('hidden');
-        }
-
-        document.getElementById('close-history').onclick = () => history.back();
-        document.getElementById('clear-history').onclick = () => {
-            state.history = [];
-            saveState();
-            renderHistory();
-        };
-
-        document.getElementById('toggle-audio').onclick = () => {
-            state.audioEnabled = !state.audioEnabled;
-            document.getElementById('audio-icon-on').classList.toggle('hidden', !state.audioEnabled);
-            document.getElementById('audio-icon-off').classList.toggle('hidden', state.audioEnabled);
-            if (state.audioEnabled) {
-                audio.bg.play().catch(() => {});
-            } else {
-                audio.bg.pause();
-            }
-            saveState();
-        };
-
-        // --- Navigation Logic ---
-        window.addEventListener('popstate', (event) => {
-            const winOpen = !winModal.classList.contains('hidden');
-            const historyOpen = !historyModal.classList.contains('hidden');
-            const settingsOpen = !settingsModal.classList.contains('hidden');
-            const gameOpen = !gameScreen.classList.contains('hidden');
-
-            if (winOpen) {
-                winModal.classList.add('hidden');
-            } else if (historyOpen) {
-                historyModal.classList.add('hidden');
-            } else if (settingsOpen) {
-                settingsModal.classList.add('hidden');
-            } else if (gameOpen) {
-                gameScreen.classList.add('hidden');
-                menuScreen.classList.remove('hidden');
-                persistentFooter.classList.remove('hidden');
-                state.scores = { X: 0, O: 0 };
-            }
-        });
-
-        // --- Initialization & Audio Persistence Fix ---
-        function initAudioOnInteraction() {
-            // Explicitly load the background music
-            audio.bg.load();
+        function resetGame() {
+            state.currentPlayer = 1;
+            state.scores = { 1: 0, 2: 0 };
+            state.isGameOver = false;
+            state.lines = [];
+            state.boxes = [];
+            state.hoveredLine = null;
             
-            const startAudio = () => {
-                if (state.audioEnabled && audio.bg.paused) {
-                    audio.bg.play().then(() => {
-                        // If successfully started, we can remove the listeners
-                        window.removeEventListener('click', startAudio);
-                        window.removeEventListener('touchstart', startAudio);
-                        window.removeEventListener('mousedown', startAudio);
-                    }).catch(e => {
-                        // If failed (e.g. browser still blocking), we keep the listeners to try again on next click
-                        console.log("Audio play blocked, retrying on next interaction...");
-                    });
-                } else if (!state.audioEnabled) {
-                    // If user has intentionally muted, we also remove listeners
-                    window.removeEventListener('click', startAudio);
-                    window.removeEventListener('touchstart', startAudio);
-                    window.removeEventListener('mousedown', startAudio);
+            document.getElementById('game-over').classList.add('hidden');
+            updateUI();
+            resizeCanvas();
+            
+            // Generate Dots
+            state.dots = [];
+            for (let r = 0; r <= state.gridSize; r++) {
+                for (let c = 0; c <= state.gridSize; c++) {
+                    state.dots.push({ r, c });
                 }
-            };
-            
-            window.addEventListener('click', startAudio);
-            window.addEventListener('touchstart', startAudio);
-            window.addEventListener('mousedown', startAudio);
+            }
+
+            // Generate potential lines
+            state.lines = [];
+            for (let r = 0; r <= state.gridSize; r++) {
+                for (let c = 0; c <= state.gridSize; c++) {
+                    // Horizontal
+                    if (c < state.gridSize) {
+                        state.lines.push({
+                            p1: r * (state.gridSize + 1) + c,
+                            p2: r * (state.gridSize + 1) + (c + 1),
+                            owner: 0,
+                            type: 'h'
+                        });
+                    }
+                    // Vertical
+                    if (r < state.gridSize) {
+                        state.lines.push({
+                            p1: r * (state.gridSize + 1) + c,
+                            p2: (r + 1) * (state.gridSize + 1) + c,
+                            owner: 0,
+                            type: 'v'
+                        });
+                    }
+                }
+            }
+
+            // Generate Boxes
+            state.boxes = [];
+            for (let r = 0; r < state.gridSize; r++) {
+                for (let c = 0; c < state.gridSize; c++) {
+                    const tl = r * (state.gridSize + 1) + c;
+                    const tr = tl + 1;
+                    const bl = (r + 1) * (state.gridSize + 1) + c;
+                    const br = bl + 1;
+                    
+                    // Find the 4 lines that make this box
+                    const boxLines = [
+                        state.lines.find(l => l.p1 === tl && l.p2 === tr), // Top
+                        state.lines.find(l => l.p1 === bl && l.p2 === br), // Bottom
+                        state.lines.find(l => l.p1 === tl && l.p2 === bl), // Left
+                        state.lines.find(l => l.p1 === tr && l.p2 === br)  // Right
+                    ];
+                    
+                    state.boxes.push({
+                        r, c,
+                        lines: boxLines,
+                        owner: 0
+                    });
+                }
+            }
         }
 
-        // --- Start ---
-        loadState();
-        initThree();
-        animateThree();
-        initAudioOnInteraction();
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (!wrapper) return;
+            const size = Math.min(wrapper.clientWidth, wrapper.clientHeight) - 40;
+            state.canvas.width = size;
+            state.canvas.height = size;
+        }
+
+        function updateHoveredLine(x, y) {
+            const margin = state.canvas.width * 0.1;
+            const innerSize = state.canvas.width - margin * 2;
+            const step = innerSize / state.gridSize;
+            
+            let bestDist = 20;
+            let bestLine = null;
+
+            state.lines.forEach(line => {
+                if (line.owner !== 0) return;
+                
+                const d1 = state.dots[line.p1];
+                const d2 = state.dots[line.p2];
+                
+                const x1 = margin + d1.c * step;
+                const y1 = margin + d1.r * step;
+                const x2 = margin + d2.c * step;
+                const y2 = margin + d2.r * step;
+                
+                // Midpoint dist
+                const mx = (x1 + x2) / 2;
+                const my = (y1 + y2) / 2;
+                const dist = Math.sqrt((x - mx)**2 + (y - my)**2);
+                
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestLine = line;
+                }
+            });
+
+            state.hoveredLine = bestLine;
+        }
+
+        function makeMove(line) {
+            if (line.owner !== 0) return;
+            
+            line.owner = state.currentPlayer;
+            state.lastLine = line;
+            state.lastMoveTime = Date.now();
+            sounds.play('line');
+            
+            const boxesCompleted = checkBoxes();
+            
+            if (boxesCompleted > 0) {
+                sounds.play('box');
+                if (isBoardFull()) {
+                    endGame();
+                } else if (state.isPvE && state.currentPlayer === 2) {
+                    setTimeout(robotMove, 400);
+                }
+            } else {
+                state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+                updateUI();
+                
+                if (state.isPvE && state.currentPlayer === 2) {
+                    setTimeout(robotMove, 500);
+                }
+            }
+        }
+
+        function checkBoxes() {
+            let completed = 0;
+            state.boxes.forEach(box => {
+                if (box.owner === 0 && box.lines.every(l => l.owner !== 0)) {
+                    box.owner = state.currentPlayer;
+                    state.scores[state.currentPlayer]++;
+                    completed++;
+                }
+            });
+            updateUI();
+            return completed;
+        }
+
+        function isBoardFull() {
+            return state.lines.every(l => l.owner !== 0);
+        }
+
+        function toPersianDigits(n) {
+            const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return n.toString().replace(/\d/g, x => farsiDigits[x]);
+        }
+
+        function updateUI() {
+            document.getElementById('p1-score').textContent = toPersianDigits(state.scores[1]);
+            document.getElementById('p2-score').textContent = toPersianDigits(state.scores[2]);
+            
+            const indicator = document.getElementById('turn-indicator');
+            const p1Card = document.getElementById('p1-score-card');
+            const p2Card = document.getElementById('p2-score-card');
+
+            if (state.currentPlayer === 1) {
+                indicator.textContent = "نوبت بازیکن ۱";
+                indicator.style.color = state.p1Color;
+                p1Card.style.opacity = "1";
+                p2Card.style.opacity = "0.4";
+                p1Card.style.transform = "scale(1.1)";
+                p2Card.style.transform = "scale(1.0)";
+            } else {
+                indicator.textContent = "نوبت " + (state.isPvE ? "ربات" : "بازیکن ۲");
+                indicator.style.color = state.p2Color;
+                p1Card.style.opacity = "0.4";
+                p2Card.style.opacity = "1";
+                p1Card.style.transform = "scale(1.0)";
+                p2Card.style.transform = "scale(1.1)";
+            }
+        }
+
+        function endGame() {
+            state.isGameOver = true;
+            sounds.play('win');
+            
+            const winnerText = document.getElementById('winner-text');
+            const finalScore = document.getElementById('final-score');
+            
+            if (state.scores[1] > state.scores[2]) {
+                winnerText.textContent = "بازیکن ۱ برنده شد!";
+                winnerText.style.color = state.p1Color;
+            } else if (state.scores[2] > state.scores[1]) {
+                winnerText.textContent = (state.isPvE ? "ربات برنده شد!" : "بازیکن ۲ برنده شد!");
+                winnerText.style.color = state.p2Color;
+            } else {
+                winnerText.textContent = "بازی مساوی شد!";
+                winnerText.style.color = "white";
+            }
+            
+            finalScore.textContent = `امتیاز نهایی: ${toPersianDigits(state.scores[1])} - ${toPersianDigits(state.scores[2])}`;
+            
+            setTimeout(() => {
+                document.getElementById('game-over').classList.remove('hidden');
+            }, 1000);
+        }
+
+        // --- Robot AI ---
+        function robotMove() {
+            if (state.isGameOver || !state.isPvE) return;
+
+            const availableLines = state.lines.filter(l => l.owner === 0);
+            if (availableLines.length === 0) return;
+
+            let selectedLine = null;
+
+            // AI Levels
+            if (state.difficulty === 'easy') {
+                selectedLine = availableLines[Math.floor(Math.random() * availableLines.length)];
+            } else {
+                // 1. Can I finish a box?
+                const finishableBox = state.boxes.find(b => b.owner === 0 && b.lines.filter(l => l.owner !== 0).length === 3);
+                if (finishableBox) {
+                    selectedLine = finishableBox.lines.find(l => l.owner === 0);
+                } else if (state.difficulty === 'hard') {
+                    // 2. Hard Mode: Avoid giving the opponent a box (lines that would complete 3rd side)
+                    const safeLines = availableLines.filter(l => {
+                        // Check every box this line belongs to
+                        const parentBoxes = state.boxes.filter(b => b.lines.includes(l));
+                        return parentBoxes.every(b => b.lines.filter(ln => ln.owner !== 0).length < 2);
+                    });
+                    
+                    if (safeLines.length > 0) {
+                        selectedLine = safeLines[Math.floor(Math.random() * safeLines.length)];
+                    } else {
+                        // If no safe lines, just take the one that gives away the fewest boxes (heuristic: random for now)
+                        selectedLine = availableLines[Math.floor(Math.random() * availableLines.length)];
+                    }
+                } else {
+                    // Normal Mode: Simple random move from available lines
+                    selectedLine = availableLines[Math.floor(Math.random() * availableLines.length)];
+                }
+            }
+
+            if (selectedLine) makeMove(selectedLine);
+        }
+
+        // --- Rendering ---
+        function animate() {
+            render();
+            requestAnimationFrame(animate);
+        }
+
+        function render() {
+            const ctx = state.ctx;
+            const canvas = state.canvas;
+            if (!ctx || !canvas) return;
+            const margin = canvas.width * 0.1;
+            const innerSize = canvas.width - margin * 2;
+            const step = innerSize / state.gridSize;
+            const time = Date.now() * 0.002;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Subtle Grid Background
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.lineWidth = 1;
+            for(let i=0; i<=state.gridSize; i++) {
+                const pos = margin + i * step;
+                ctx.beginPath(); ctx.moveTo(pos, margin); ctx.lineTo(pos, canvas.height - margin); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(margin, pos); ctx.lineTo(canvas.width - margin, pos); ctx.stroke();
+            }
+
+            // Draw Boxes (Fills)
+            state.boxes.forEach(box => {
+                if (box.owner !== 0) {
+                    const x = margin + box.c * step;
+                    const y = margin + box.r * step;
+                    
+                    const baseColor = box.owner === 1 ? state.p1Color : state.p2Color;
+                    const gradient = ctx.createRadialGradient(x + step/2, y + step/2, 0, x + step/2, y + step/2, step);
+                    gradient.addColorStop(0, baseColor + '44');
+                    gradient.addColorStop(1, baseColor + '11');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.roundRect(x + 4, y + 4, step - 8, step - 8, 8);
+                    ctx.fill();
+                    
+                    // Owner Label with subtle floating effect
+                    const offsetY = Math.sin(time + (box.r * 0.5) + (box.c * 0.5)) * 2;
+                    ctx.fillStyle = baseColor;
+                    ctx.font = `bold ${step * 0.45}px 'Vazirmatn'`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const label = box.owner === 1 ? '۱' : (state.isPvE ? 'ر' : '۲');
+                    
+                    if (state.bloom) {
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = baseColor;
+                    }
+                    ctx.fillText(label, x + step/2, y + step/2 + offsetY);
+                    ctx.shadowBlur = 0;
+                }
+            });
+
+            // Draw Lines
+            state.lines.forEach(line => {
+                const d1 = state.dots[line.p1];
+                const d2 = state.dots[line.p2];
+                const x1 = margin + d1.c * step;
+                const y1 = margin + d1.r * step;
+                const x2 = margin + d2.c * step;
+                const y2 = margin + d2.r * step;
+
+                const isHovered = state.hoveredLine === line;
+                const isLast = state.lastLine === line;
+                
+                if (line.owner !== 0 || isHovered) {
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    
+                    if (line.owner !== 0) {
+                        const baseColor = line.owner === 1 ? state.p1Color : state.p2Color;
+                        ctx.strokeStyle = baseColor;
+                        ctx.lineWidth = isLast ? 8 : 5;
+                        
+                        if (state.bloom) {
+                            const pulse = isLast ? (Math.sin(Date.now() * 0.01) * 10 + 20) : 12;
+                            ctx.shadowBlur = pulse;
+                            ctx.shadowColor = baseColor;
+                        }
+                    } else {
+                        const hoverColor = state.currentPlayer === 1 ? state.p1Color : state.p2Color;
+                        ctx.strokeStyle = hoverColor + '88';
+                        ctx.lineWidth = 4;
+                        ctx.setLineDash([8, 4]);
+                    }
+                    
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.shadowBlur = 0;
+                }
+            });
+
+            // Draw Dots (Pegs)
+            state.dots.forEach(dot => {
+                const x = margin + dot.c * step;
+                const y = margin + dot.r * step;
+                
+                // Outer ring
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                
+                // Inner core
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#94a3b8';
+                
+                if (state.bloom) {
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = 'rgba(255,255,255,0.5)';
+                }
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        // Start
+        init();
     </script>
 </body>
 </html>
